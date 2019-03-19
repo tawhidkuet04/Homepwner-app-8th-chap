@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSDate *_dateCreated;
     
 }
+@property(nonatomic,copy)NSString *itemKey;
 +(instancetype)randomItem;
 -(instancetype)initWithItemName:(NSString *)name  valueInDollars:(int)value serialNumber:(NSString *)sNumber;
 -(instancetype)initWithItemName:(NSString *)name;
