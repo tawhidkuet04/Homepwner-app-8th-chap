@@ -16,12 +16,19 @@
 @end;
 
 @implementation BNRItemsViewController
+#pragma mark view life cycle
 -(void)viewDidLoad{
     [super viewDidLoad];
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"UITableViewCell"];
     UIView *header = self.headerView;
     [self.tableView setTableHeaderView:header];
 }
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    [self.tableView reloadData];
+}
+
+#pragma mark table view
 -(instancetype)init {
     self = [ super initWithStyle:UITableViewStylePlain];
     self = [super initWithStyle:UITableViewStylePlain];
@@ -38,9 +45,11 @@
 -(instancetype)initWithStyle:(UITableViewStyle)style{
     return [ self init ];
 }
+
 -(NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     return [[[BNRItemStore sharedStore]allItems]count];
 }
+
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"UITableViewCell" forIndexPath:indexPath];
     NSArray *items = [[BNRItemStore sharedStore]allItems];
@@ -55,6 +64,7 @@
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:lastRow inSection:0];
     [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationTop];
 }
+
 -(void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{
     if(editingStyle == UITableViewCellEditingStyleDelete){
         NSArray *items = [[BNRItemStore sharedStore]allItems];
@@ -63,6 +73,7 @@
         [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
     }
 }
+
 -(void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath{
     [[BNRItemStore sharedStore]moveItemAtIndex:sourceIndexPath.row toIndex:destinationIndexPath.row];
 }
@@ -72,10 +83,6 @@
     BNRItem *selectedItem = items[indexPath.row];
     deatilViewController.item = selectedItem;
     [self.navigationController pushViewController:deatilViewController animated:YES];
-}
--(void)viewWillAppear:(BOOL)animated{
-    [super viewWillAppear:animated];
-    [self.tableView reloadData];
 }
 
 @end
