@@ -9,6 +9,8 @@
 #import "BNRItemsViewController.h"
 #import "BNRItemStore.h"
 #import "BNRItem.h"
+#import "BNRDetailViewController.h"
+
 @interface BNRItemsViewController()
 @property (nonatomic,strong) IBOutlet UIView *headerView;
 @end;
@@ -22,8 +24,16 @@
 }
 -(instancetype)init {
     self = [ super initWithStyle:UITableViewStylePlain];
-
+    self = [super initWithStyle:UITableViewStylePlain];
+        if(self){
+            UINavigationItem *navItem = self.navigationItem;
+            navItem.title = @"Homepwner";
+            UIBarButtonItem *bbi = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addNewItem:)];
+            navItem.rightBarButtonItem=bbi;
+            navItem.leftBarButtonItem=self.editButtonItem;
+        }
     return self ;
+
 }
 -(instancetype)initWithStyle:(UITableViewStyle)style{
     return [ self init ];
@@ -45,21 +55,6 @@
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:lastRow inSection:0];
     [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationTop];
 }
--(UIView *)headerView{
-    if(!_headerView){
-        [[NSBundle mainBundle]loadNibNamed:@"HeaderView" owner:self options:nil];
-    }
-    return  _headerView;
-}
--(IBAction) toggleEditingMode:(id)sender{
-    if(self.isEditing){
-        [sender setTitle:@"Edit" forState:UIControlStateNormal];
-        [self setEditing:NO animated:YES];
-    }else {
-        [sender setTitle:@"Done" forState:UIControlStateNormal];
-        [self setEditing:YES animated:YES];
-    }
-}
 -(void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{
     if(editingStyle == UITableViewCellEditingStyleDelete){
         NSArray *items = [[BNRItemStore sharedStore]allItems];
@@ -71,4 +66,16 @@
 -(void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath{
     [[BNRItemStore sharedStore]moveItemAtIndex:sourceIndexPath.row toIndex:destinationIndexPath.row];
 }
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    BNRDetailViewController *deatilViewController = [[BNRDetailViewController alloc]init];
+    NSArray *items=[[BNRItemStore sharedStore]allItems];
+    BNRItem *selectedItem = items[indexPath.row];
+    deatilViewController.item = selectedItem;
+    [self.navigationController pushViewController:deatilViewController animated:YES];
+}
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    [self.tableView reloadData];
+}
+
 @end
